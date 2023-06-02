@@ -1,6 +1,7 @@
 ﻿/*
  * Copyright (C) 2015 Marcos Vives Del Sol
  * Copyright (C) 2016 Benjamin Krämer
+ * Copyright (C) 2023 Wladislaw Batt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,26 +22,25 @@
  * THE SOFTWARE.
  */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Security.Cryptography;
 
 namespace LibAmiibo.Encryption
 {
-    public class CDNKeys
+    internal class CDNKeys
     {
         private byte[] aesIV;           // 16 bytes
         private List<byte[]> aesKeys;   // 16 bytes each
-        
+
         private CDNKeys() { }
 
         internal static CDNKeys Unserialize(BinaryReader reader)
         {
-            byte[] aesIV = reader.ReadBytes(16);
-            List<byte[]> aesKeys = new List<byte[]>();
+            var aesIV = reader.ReadBytes(16);
+            var aesKeys = new List<byte[]>();
             while (reader.PeekChar() != -1)
+            {
                 aesKeys.Add(reader.ReadBytes(16));
+            }
 
             return new CDNKeys
             {
@@ -72,7 +72,7 @@ namespace LibAmiibo.Encryption
                     return result;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.Error.WriteLine("A problem occured reading the cdn keys: " + ex.Message);
                 return null;
@@ -83,10 +83,10 @@ namespace LibAmiibo.Encryption
         {
             byte[] result;
 
-            using (var aesManaged = new AesManaged())
+            using (var aesManaged = Aes.Create())
             {
-                aesManaged.Key = aesKeys[keyId];
-                aesManaged.IV = aesIV;
+                aesManaged.Key = this.aesKeys[keyId];
+                aesManaged.IV = this.aesIV;
                 aesManaged.Padding = PaddingMode.None;
                 aesManaged.Mode = CipherMode.CBC;
 

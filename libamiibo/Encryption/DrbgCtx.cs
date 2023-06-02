@@ -21,7 +21,6 @@
  * THE SOFTWARE.
  */
 
-using System;
 using System.Diagnostics;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
@@ -48,7 +47,7 @@ namespace LibAmiibo.Encryption
             // Initialize primitives
             this.used = false;
             this.iteration = 0;
-            this.buffer = new byte[sizeof (ushort) + seedSize];
+            this.buffer = new byte[sizeof(ushort) + seedSize];
 
             // The 16-bit counter is prepended to the seed when hashing, so we'll leave 2 bytes at the start
             Array.Copy(seed, 0, this.buffer, sizeof(ushort), seedSize);
@@ -67,21 +66,22 @@ namespace LibAmiibo.Encryption
                 // If used at least once, reinitialize the HMAC
                 this.hmacCtx.Reset();
             }
-            else {
+            else
+            {
                 this.used = true;
             }
 
             // Store counter in big endian, and increment it
-            this.buffer[0] = (byte) (this.iteration >> 8);
-            this.buffer[1] = (byte) (this.iteration >> 0);
+            this.buffer[0] = (byte)(this.iteration >> 8);
+            this.buffer[1] = (byte)(this.iteration >> 0);
             this.iteration++;
 
             // Do HMAC magic
-            this.hmacCtx.BlockUpdate(buffer, 0, buffer.Length);
+            this.hmacCtx.BlockUpdate(this.buffer, 0, this.buffer.Length);
             this.hmacCtx.DoFinal(output, offset);
         }
 
-        public static KeygenDerivedkeys GenerateBytes(byte[] hmacKey, byte[] seed, int seedSize)
+        public static KeygenDerivedKeys GenerateBytes(byte[] hmacKey, byte[] seed, int seedSize)
         {
             int offset = 0;
             int outputSize = 16 * 3;
@@ -103,7 +103,7 @@ namespace LibAmiibo.Encryption
                 outputSize -= NFC3D_DRBG_OUTPUT_SIZE;
             }
 
-            var outkeys = new KeygenDerivedkeys
+            var outkeys = new KeygenDerivedKeys
             {
                 aesKey = new byte[16],
                 aesIV = new byte[16],

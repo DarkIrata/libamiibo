@@ -19,9 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
- 
+
 using System.Drawing;
-using System.IO;
 using Image = StbSharp.Image;
 
 namespace LibAmiibo.Helper
@@ -36,10 +35,12 @@ namespace LibAmiibo.Helper
                                                 0x41,0x4A,0x52,0x5A,0x62,0x6A,0x73,0x7B,
                                                 0x83,0x8B,0x94,0x9C,0xA4,0xAC,0xB4,0xBD,
                                                 0xC5,0xCD,0xD5,0xDE,0xE6,0xEE,0xF6,0xFF };
+
         //Convert4To8 is just multiplication by 0x11
         //private static readonly int[] Convert3To8 = { 0x00, 0x24, 0x48, 0x6D, 0x91, 0xB6, 0xDA, 0xFF };
 
         private static readonly byte[] TempBytes = new byte[4];
+
         public enum PixelFormat
         {                   //System.Drawing.Imaging.PixelFormat equivalent
             RGBA8 = 0,      //Format32bppArgb   (-should be Rgba)           rrrrrrrr gggggggg bbbbbbbb aaaaaaaa
@@ -57,11 +58,9 @@ namespace LibAmiibo.Helper
             ETC1A4 = 12     //Ericsson Texture Compression
         }
 
-        private static byte GetLuminance(byte red, byte green, byte blue)
-        {
+        private static byte GetLuminance(byte red, byte green, byte blue) =>
             // Luma (Y’) = 0.299 R’ + 0.587 G’ + 0.114 B’ from wikipedia
-            return (byte)(((0x4CB2*red + 0x9691*green + 0x1D3E*blue) >> 16) & 0xFF);
-        }
+            (byte)(((0x4CB2 * red + 0x9691 * green + 0x1D3E * blue) >> 16) & 0xFF);
 
         private static int PixelFormatBytes(PixelFormat pixelFormat)
         {
@@ -190,9 +189,15 @@ namespace LibAmiibo.Helper
                 bmp.SetPixel(ax, ay, DecodeColor((TempBytes[1] << 8) + TempBytes[0], pixelFormat));
             }
             else
+            {
                 for (var y = 0; y < iconSize; y += tileSize)
+                {
                     for (var x = 0; x < iconSize; x += tileSize)
+                    {
                         DecodeTile(tileSize, tileSize / 2, x + ax, y + ay, bmp, fs, pixelFormat);
+                    }
+                }
+            }
         }
 
         private static void EncodeTile(int iconSize, int tileSize, int ax, int ay, Image bmp, Stream fs, PixelFormat pixelFormat)
@@ -203,9 +208,15 @@ namespace LibAmiibo.Helper
                 fs.Write(TempBytes, 0, PixelFormatBytes(pixelFormat));
             }
             else
+            {
                 for (var y = 0; y < iconSize; y += tileSize)
+                {
                     for (var x = 0; x < iconSize; x += tileSize)
+                    {
                         EncodeTile(tileSize, tileSize / 2, x + ax, y + ay, bmp, fs, pixelFormat);
+                    }
+                }
+            }
         }
 
         public static Image ReadImageFromStream(Stream fs, int width, int height, PixelFormat pixelFormat)
@@ -218,38 +229,44 @@ namespace LibAmiibo.Helper
                 Data = new byte[width * height * 4]
             };
             for (var y = 0; y < height; y += 8)
+            {
                 for (var x = 0; x < width; x += 8)
+                {
                     DecodeTile(8, 8, x, y, image, fs, pixelFormat);
+                }
+            }
+
             return image;
         }
 
         public static void WriteImageToStream(Image source, Stream fs, PixelFormat pixelFormat)
         {
             for (var y = 0; y < source.Height; y += 8)
+            {
                 for (var x = 0; x < source.Width; x += 8)
+                {
                     EncodeTile(8, 8, 0, 0, source, fs, pixelFormat);
+                }
+            }
         }
-    }
-}
 
-static class Extensions
-{
-    public static void SetPixel(this Image img, int x, int y, Color color)
-    {
-        int offset = (y * img.Width + x) * img.Comp;
-        img.Data[offset + 0] = color.R;
-        img.Data[offset + 1] = color.G;
-        img.Data[offset + 2] = color.B;
-        img.Data[offset + 3] = color.A;
-    }
+        public static void SetPixel(this Image img, int x, int y, Color color)
+        {
+            int offset = (y * img.Width + x) * img.Comp;
+            img.Data[offset + 0] = color.R;
+            img.Data[offset + 1] = color.G;
+            img.Data[offset + 2] = color.B;
+            img.Data[offset + 3] = color.A;
+        }
 
-    public static Color GetPixel(this Image img, int x, int y)
-    {
-        int offset = (y * img.Width + x) * img.Comp;
-        var red = img.Data[offset + 0];
-        var green = img.Data[offset + 1];
-        var blue = img.Data[offset + 2];
-        var alpha = img.Data[offset + 3];
-        return Color.FromArgb(alpha, red, green, blue);
+        public static Color GetPixel(this Image img, int x, int y)
+        {
+            int offset = (y * img.Width + x) * img.Comp;
+            var red = img.Data[offset + 0];
+            var green = img.Data[offset + 1];
+            var blue = img.Data[offset + 2];
+            var alpha = img.Data[offset + 3];
+            return Color.FromArgb(alpha, red, green, blue);
+        }
     }
 }

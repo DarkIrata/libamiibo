@@ -1,5 +1,4 @@
 ﻿/*
- * Copyright (C) 2015 Marcos Vives Del Sol
  * Copyright (C) 2016 Benjamin Krämer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,31 +20,16 @@
  * THE SOFTWARE.
  */
 
-namespace LibAmiibo.Helper
+namespace LibAmiibo.IDBE
 {
-    public static class NativeHelpers
+    public abstract class IDBEContext
     {
-        public static bool MemCmp(byte[] a, byte[] b, int start, int length)
-        {
-            if (a == b)
-            {
-                return true;
-            }
+        public IDBEHeader Header;
 
-            if (a == null ^ b == null)
-            {
-                return false;
-            }
+        public abstract string FirstTitle(Localization localization);
 
-            for (int i = 0; i < length; i++)
-            {
-                var offset = start + i;
-                if (a[offset] != b[offset])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        public abstract string SecondTitle(Localization localization);
+
+        public abstract string Publisher(Localization localization);
     }
 }

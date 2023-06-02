@@ -1,5 +1,4 @@
 ﻿/*
- * Copyright (C) 2015 Marcos Vives Del Sol
  * Copyright (C) 2016 Benjamin Krämer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,31 +20,20 @@
  * THE SOFTWARE.
  */
 
-namespace LibAmiibo.Helper
+using System.Runtime.InteropServices;
+
+namespace LibAmiibo.IDBE
 {
-    public static class NativeHelpers
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ICNLocalizedDescription
     {
-        public static bool MemCmp(byte[] a, byte[] b, int start, int length)
-        {
-            if (a == b)
-            {
-                return true;
-            }
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x80)]
+        public byte[] FirstTitle;
 
-            if (a == null ^ b == null)
-            {
-                return false;
-            }
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
+        public byte[] SecondTitle;
 
-            for (int i = 0; i < length; i++)
-            {
-                var offset = start + i;
-                if (a[offset] != b[offset])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x80)]
+        public byte[] Publisher;
     }
 }

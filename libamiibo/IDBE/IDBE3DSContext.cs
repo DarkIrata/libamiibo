@@ -1,5 +1,4 @@
 ﻿/*
- * Copyright (C) 2015 Marcos Vives Del Sol
  * Copyright (C) 2016 Benjamin Krämer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,30 +20,33 @@
  * THE SOFTWARE.
  */
 
-namespace LibAmiibo.Helper
+using System.Text;
+using LibAmiibo.Helper;
+using StbSharp;
+
+namespace LibAmiibo.IDBE
 {
-    public static class NativeHelpers
+    internal class IDBE3DSContext : IDBEContext
     {
-        public static bool MemCmp(byte[] a, byte[] b, int start, int length)
+        public Image SmallIcon;
+
+        public Image LargeIcon;
+
+        public override string FirstTitle(Localization localization)
+            => MarshalUtil.CleanInput(Encoding.Unicode.GetString(this.Header.Descriptions[(int)localization].FirstTitle));
+
+        public override string SecondTitle(Localization localization)
+            => MarshalUtil.CleanInput(Encoding.Unicode.GetString(this.Header.Descriptions[(int)localization].SecondTitle));
+
+        public override string Publisher(Localization localization)
+            => MarshalUtil.CleanInput(Encoding.Unicode.GetString(this.Header.Descriptions[(int)localization].Publisher));
+
+        public bool Open(Stream fs)
         {
-            if (a == b)
-            {
-                return true;
-            }
+            this.Header = MarshalUtil.ReadStruct<IDBEHeader>(fs);
+            this.SmallIcon = ImageUtil.ReadImageFromStream(fs, 24, 24, ImageUtil.PixelFormat.RGB565);
+            this.LargeIcon = ImageUtil.ReadImageFromStream(fs, 48, 48, ImageUtil.PixelFormat.RGB565);
 
-            if (a == null ^ b == null)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < length; i++)
-            {
-                var offset = start + i;
-                if (a[offset] != b[offset])
-                {
-                    return false;
-                }
-            }
             return true;
         }
     }

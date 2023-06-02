@@ -1,5 +1,4 @@
-﻿using System;
-using LibAmiibo.Data.Settings.AppData;
+﻿using LibAmiibo.Data.AppData;
 
 namespace LibAmiibo.Attributes
 {
@@ -10,7 +9,7 @@ namespace LibAmiibo.Attributes
 
         public AppDataInitializationTitleIDAttribute(string titleId)
         {
-            TitleID = Title.FromTitleID(titleId);
+            this.TitleID = Title.FromTitleID(titleId);
         }
     }
 }

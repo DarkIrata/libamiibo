@@ -20,28 +20,25 @@
  * THE SOFTWARE.
  */
 
-using System;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace LibAmiibo.Helper
 {
-    static class MarshalUtil
+    public static class MarshalUtil
     {
         public static string CleanInput(string input)
         {
             input = input.Replace('\n', ' ');
             var end = input.IndexOf('\0');
             if (end == -1)
+            {
                 return input;
+            }
+
             return input.Remove(end);
         }
 
-        public static string CleanOutput(string output)
-        {
-            return output.PadRight(10, '\0');
-        }
+        public static string CleanOutput(string output) => output.PadRight(10, '\0');
 
         public static T ReadStruct<T>(Stream fs)
         {
@@ -62,16 +59,14 @@ namespace LibAmiibo.Helper
             var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             var typedObject = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
             handle.Free();
-            typedObject = (T)CorrectEndianness(typedObject);
-            return typedObject;
+
+            return (T)CorrectEndianness(typedObject);
         }
 
         private static object CorrectEndianness(object typedObject)
         {
             var type = typedObject.GetType();
-            var fieldInfo = type.GetFields();
-
-            foreach (var fi in fieldInfo)
+            foreach (var fi in type.GetFields())
             {
                 var fieldType = fi.FieldType;
                 if (fieldType.IsEnum)
@@ -80,7 +75,9 @@ namespace LibAmiibo.Helper
                 }
 
                 if (fieldType.IsArray)
+                {
                     continue;
+                }
 
                 if (!fieldType.IsPrimitive)
                 {
@@ -88,42 +85,42 @@ namespace LibAmiibo.Helper
                     obj = CorrectEndianness(obj);
                     fi.SetValue(typedObject, obj);
                 }
-                else if (fieldType == typeof (Int16))
+                else if (fieldType == typeof(Int16))
                 {
                     var i16 = (Int16)fi.GetValue(typedObject);
                     var b16 = BitConverter.GetBytes(i16);
                     var b16R = b16.Reverse().ToArray();
                     fi.SetValue(typedObject, BitConverter.ToInt16(b16R, 0));
                 }
-                else if (fieldType == typeof (Int32))
+                else if (fieldType == typeof(Int32))
                 {
                     var i32 = (Int32)fi.GetValue(typedObject);
                     var b32 = BitConverter.GetBytes(i32);
                     var b32R = b32.Reverse().ToArray();
                     fi.SetValue(typedObject, BitConverter.ToInt32(b32R, 0));
                 }
-                else if (fieldType == typeof (Int64))
+                else if (fieldType == typeof(Int64))
                 {
                     var i64 = (Int64)fi.GetValue(typedObject);
                     var b64 = BitConverter.GetBytes(i64);
                     var b64R = b64.Reverse().ToArray();
                     fi.SetValue(typedObject, BitConverter.ToInt64(b64R, 0));
                 }
-                else if (fieldType == typeof (UInt16))
+                else if (fieldType == typeof(UInt16))
                 {
                     var i16 = (UInt16)fi.GetValue(typedObject);
                     var b16 = BitConverter.GetBytes(i16);
                     var b16R = b16.Reverse().ToArray();
                     fi.SetValue(typedObject, BitConverter.ToUInt16(b16R, 0));
                 }
-                else if (fieldType == typeof (UInt32))
+                else if (fieldType == typeof(UInt32))
                 {
                     var i32 = (UInt32)fi.GetValue(typedObject);
                     var b32 = BitConverter.GetBytes(i32);
                     var b32R = b32.Reverse().ToArray();
                     fi.SetValue(typedObject, BitConverter.ToUInt32(b32R, 0));
                 }
-                else if (fieldType == typeof (UInt64))
+                else if (fieldType == typeof(UInt64))
                 {
                     var i64 = (UInt64)fi.GetValue(typedObject);
                     var b64 = BitConverter.GetBytes(i64);
@@ -131,6 +128,7 @@ namespace LibAmiibo.Helper
                     fi.SetValue(typedObject, BitConverter.ToUInt64(b64R, 0));
                 }
             }
+
             return typedObject;
         }
     }

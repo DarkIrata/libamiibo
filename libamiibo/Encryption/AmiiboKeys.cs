@@ -21,8 +21,6 @@
  * THE SOFTWARE.
  */
 
-using System;
-using System.IO;
 using LibAmiibo.Helper;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
@@ -30,7 +28,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace LibAmiibo.Encryption
 {
-    public class AmiiboKeys
+    internal class AmiiboKeys
     {
         public const int HMAC_POS_DATA = 0x008;
         public const int HMAC_POS_TAG = 0x1B4;
@@ -40,14 +38,11 @@ namespace LibAmiibo.Encryption
         private KeygenMasterkeys data;
         private KeygenMasterkeys tag;
 
-        internal static AmiiboKeys Unserialize(BinaryReader reader)
+        internal static AmiiboKeys Unserialize(BinaryReader reader) => new AmiiboKeys
         {
-            return new AmiiboKeys
-            {
-                data = KeygenMasterkeys.Unserialize(reader),
-                tag = KeygenMasterkeys.Unserialize(reader)
-            };
-        }
+            data = KeygenMasterkeys.Unserialize(reader),
+            tag = KeygenMasterkeys.Unserialize(reader)
+        };
 
         internal void Serialize(BinaryWriter writer)
         {
@@ -57,17 +52,17 @@ namespace LibAmiibo.Encryption
 
         public bool Unpack(byte[] tag, byte[] plain)
         {
-            byte[] internalBytes = NtagHelpers.GetInternalTag(tag);
+            byte[] internalBytes = NtagHelper.GetInternalTag(tag);
 
             // Generate keys
-            KeygenDerivedkeys dataKeys = GenerateKey(this.data, internalBytes);
-            KeygenDerivedkeys tagKeys = GenerateKey(this.tag, internalBytes);
+            KeygenDerivedKeys dataKeys = this.GenerateKey(this.data, internalBytes);
+            KeygenDerivedKeys tagKeys = this.GenerateKey(this.tag, internalBytes);
 
             // Decrypt
             dataKeys.Cipher(internalBytes, plain, false);
 
             // Init OpenSSL HMAC context
-            HMac hmacCtx = new HMac(new Sha256Digest());
+            var hmacCtx = new HMac(new Sha256Digest());
 
             // Regenerate tag HMAC. Note: order matters, data HMAC depends on tag HMAC!
             hmacCtx.Init(new KeyParameter(tagKeys.hmacKey));
@@ -86,11 +81,11 @@ namespace LibAmiibo.Encryption
 
         public void Pack(byte[] plain, byte[] tag)
         {
-            byte[] cipher = new byte[NtagHelpers.NFC3D_AMIIBO_SIZE];
+            byte[] cipher = new byte[NtagHelper.NFC3D_AMIIBO_SIZE];
 
             // Generate keys
-            var tagKeys = GenerateKey(this.tag, plain);
-            var dataKeys = GenerateKey(this.data, plain);
+            var tagKeys = this.GenerateKey(this.tag, plain);
+            var dataKeys = this.GenerateKey(this.data, plain);
 
             // Init OpenSSL HMAC context
             HMac hmacCtx = new HMac(new Sha256Digest());
@@ -111,22 +106,25 @@ namespace LibAmiibo.Encryption
             dataKeys.Cipher(plain, cipher, true);
 
             // Convert back to hardware
-            NtagHelpers.InternalToTag(cipher, tag);
+            NtagHelper.InternalToTag(cipher, tag);
         }
 
         public static AmiiboKeys LoadKeys(string path)
         {
             if (!File.Exists(path))
+            {
                 return null;
+            }
 
             try
             {
                 using (var reader = new BinaryReader(File.OpenRead(path)))
                 {
                     var result = AmiiboKeys.Unserialize(reader);
-
                     if ((result.data.magicBytesSize > 16) || (result.tag.magicBytesSize > 16))
+                    {
                         return null;
+                    }
 
                     return result;
                 }
@@ -147,7 +145,7 @@ namespace LibAmiibo.Encryption
             return key;
         }
 
-        private KeygenDerivedkeys GenerateKey(KeygenMasterkeys masterKeys, byte[] dump)
+        private KeygenDerivedKeys GenerateKey(KeygenMasterkeys masterKeys, byte[] dump)
         {
             byte[] seed = CalcSeed(dump);
             return masterKeys.GenerateKey(seed);

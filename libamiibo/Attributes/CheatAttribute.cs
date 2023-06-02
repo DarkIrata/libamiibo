@@ -1,32 +1,25 @@
-﻿using System;
-
-namespace LibAmiibo.Attributes
+﻿namespace LibAmiibo.Attributes
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class CheatAttribute : Attribute
     {
-        public enum Type
-        {
-            Undefined,
-            TextBox,
-            CheckBox,
-            MultiDropDown,
-            DropDown,
-            NumberSpinner
-        }
+        public CheatType DisplayType { get; }
 
-        public Type DisplayType { get; }
         public string Section { get; }
-        public string Name { get; }
-        public string Description { get; set; }
-        public uint Min { get;set; }
-        public uint Max { get;set; }
 
-        public CheatAttribute(Type displayType, string section, string name)
+        public string Name { get; }
+
+        public string Description { get; set; }
+
+        public uint Min { get; set; }
+
+        public uint Max { get; set; }
+
+        public CheatAttribute(CheatType displayType, string section, string name)
         {
-            DisplayType = displayType;
-            Section = section;
-            Name = name;
+            this.DisplayType = displayType;
+            this.Section = section;
+            this.Name = name;
         }
     }
 }

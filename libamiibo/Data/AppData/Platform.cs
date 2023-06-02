@@ -1,5 +1,4 @@
 ﻿/*
- * Copyright (C) 2015 Marcos Vives Del Sol
  * Copyright (C) 2016 Benjamin Krämer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,31 +20,16 @@
  * THE SOFTWARE.
  */
 
-namespace LibAmiibo.Helper
+
+namespace LibAmiibo.Data.AppData
 {
-    public static class NativeHelpers
+    public enum Platform
     {
-        public static bool MemCmp(byte[] a, byte[] b, int start, int length)
-        {
-            if (a == b)
-            {
-                return true;
-            }
-
-            if (a == null ^ b == null)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < length; i++)
-            {
-                var offset = start + i;
-                if (a[offset] != b[offset])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        Unknown = 0x000,
+        Wii = 0x001,
+        DSi = 0x003,
+        N3DS = 0x004,
+        WiiU = 0x005,
+        Switch = 0x100
     }
 }

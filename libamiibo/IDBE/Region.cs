@@ -1,5 +1,4 @@
 ﻿/*
- * Copyright (C) 2015 Marcos Vives Del Sol
  * Copyright (C) 2016 Benjamin Krämer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,31 +20,18 @@
  * THE SOFTWARE.
  */
 
-namespace LibAmiibo.Helper
+namespace LibAmiibo.IDBE
 {
-    public static class NativeHelpers
+    [Flags]
+    public enum Region
     {
-        public static bool MemCmp(byte[] a, byte[] b, int start, int length)
-        {
-            if (a == b)
-            {
-                return true;
-            }
-
-            if (a == null ^ b == null)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < length; i++)
-            {
-                var offset = start + i;
-                if (a[offset] != b[offset])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        Japan = 0x01,
+        NorthAmerica = 0x02,
+        Europe = 0x04,
+        Australia = 0x08,
+        China = 0x10,
+        Korea = 0x20,
+        Taiwan = 0x40,
+        AllRegions = int.MaxValue
     }
 }

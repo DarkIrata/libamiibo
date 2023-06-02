@@ -9,7 +9,7 @@ namespace LibAmiibo.Attributes
 
         public AppIDAttribute(uint appId)
         {
-            AppID = appId;
+            this.AppID = appId;
         }
     }
 }

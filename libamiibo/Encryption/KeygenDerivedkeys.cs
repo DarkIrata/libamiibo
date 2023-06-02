@@ -1,6 +1,6 @@
-/*
+﻿/*
  * Copyright (C) 2015 Marcos Vives Del Sol
- * Copyright (C) 2016 Benjamin Kr�mer
+ * Copyright (C) 2016 Benjamin Krämer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,60 +21,63 @@
  * THE SOFTWARE.
  */
 
-using System;
-using System.IO;
 using LibAmiibo.Helper;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 
 namespace LibAmiibo.Encryption
 {
-    public class KeygenDerivedkeys
+    public class KeygenDerivedKeys
     {
         public byte[] aesKey;  // 16 bytes
         public byte[] aesIV;   // 16 bytes
         public byte[] hmacKey; // 16 bytes
 
-        internal static KeygenDerivedkeys Unserialize(BinaryReader reader)
+        internal static KeygenDerivedKeys Unserialize(BinaryReader reader) => new KeygenDerivedKeys
         {
-            return new KeygenDerivedkeys
-            {
-                aesKey = reader.ReadBytes(16),
-                aesIV = reader.ReadBytes(16),
-                hmacKey = reader.ReadBytes(16)
-            };
-        }
+            aesKey = reader.ReadBytes(16),
+            aesIV = reader.ReadBytes(16),
+            hmacKey = reader.ReadBytes(16)
+        };
 
         internal void Serialize(BinaryWriter writer)
         {
-            writer.Write(aesKey);
-            writer.Write(aesIV);
-            writer.Write(hmacKey);
+            writer.Write(this.aesKey);
+            writer.Write(this.aesIV);
+            writer.Write(this.hmacKey);
         }
 
-        protected bool Equals(KeygenDerivedkeys other)
-        {
-            return
-                NativeHelpers.MemCmp(aesKey, other.aesKey, 0, aesKey.Length) &&
-                NativeHelpers.MemCmp(aesIV, other.aesIV, 0, aesIV.Length) &&
-                NativeHelpers.MemCmp(hmacKey, other.hmacKey, 0, hmacKey.Length);
-        }
+        protected bool Equals(KeygenDerivedKeys other) => NativeHelpers.MemCmp(this.aesKey, other.aesKey, 0, this.aesKey.Length) &&
+                NativeHelpers.MemCmp(this.aesIV, other.aesIV, 0, this.aesIV.Length) &&
+                NativeHelpers.MemCmp(this.hmacKey, other.hmacKey, 0, this.hmacKey.Length);
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((KeygenDerivedkeys)obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
+            return this.Equals((KeygenDerivedKeys)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = (aesKey != null ? aesKey.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (aesIV != null ? aesIV.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (hmacKey != null ? hmacKey.GetHashCode() : 0);
+                var hashCode = (this.aesKey != null ? this.aesKey.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (this.aesIV != null ? this.aesIV.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (this.hmacKey != null ? this.hmacKey.GetHashCode() : 0);
                 return hashCode;
             }
         }

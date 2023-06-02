@@ -1,5 +1,4 @@
 ﻿/*
- * Copyright (C) 2015 Marcos Vives Del Sol
  * Copyright (C) 2016 Benjamin Krämer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,31 +20,50 @@
  * THE SOFTWARE.
  */
 
-namespace LibAmiibo.Helper
+namespace LibAmiibo.Data.AppData
 {
-    public static class NativeHelpers
+    [Flags]
+    public enum TitleType
     {
-        public static bool MemCmp(byte[] a, byte[] b, int start, int length)
+        Unknown = 0xFF,
+        System = 0x01,
+        Application = 0x02,
+        Evaluation = 0x04,
+        Prototype = 0x08
+    }
+
+    internal static class TitleTypeUtil
+    {
+        internal static TitleType GetType(ulong id)
         {
-            if (a == b)
+            TitleType type = 0;
+#pragma warning disable RCS1215 // Expression is always equal to true/false.
+            if (id >= 0x00000 && id <= 0x002FF)
             {
-                return true;
+                type |= TitleType.System;
+            }
+#pragma warning restore RCS1215 // Expression is always equal to true/false.
+            if (id >= 0x00300 && id <= 0xF7FFF)
+            {
+                type |= TitleType.Application;
             }
 
-            if (a == null ^ b == null)
+            if (id >= 0xF8000 && id <= 0xFFFFF)
             {
-                return false;
+                type |= TitleType.Evaluation;
             }
 
-            for (int i = 0; i < length; i++)
+            if (id >= 0xFF000 && id <= 0xFF3FF)
             {
-                var offset = start + i;
-                if (a[offset] != b[offset])
-                {
-                    return false;
-                }
+                type |= TitleType.Prototype;
             }
-            return true;
+
+            if (type != 0)
+            {
+                return type;
+            }
+
+            return TitleType.Unknown;
         }
     }
 }

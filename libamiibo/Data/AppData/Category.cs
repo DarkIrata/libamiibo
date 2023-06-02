@@ -1,5 +1,4 @@
 ﻿/*
- * Copyright (C) 2015 Marcos Vives Del Sol
  * Copyright (C) 2016 Benjamin Krämer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,31 +20,23 @@
  * THE SOFTWARE.
  */
 
-namespace LibAmiibo.Helper
+namespace LibAmiibo.Data.AppData
 {
-    public static class NativeHelpers
+    [Flags]
+    public enum Category
     {
-        public static bool MemCmp(byte[] a, byte[] b, int start, int length)
-        {
-            if (a == b)
-            {
-                return true;
-            }
-
-            if (a == null ^ b == null)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < length; i++)
-            {
-                var offset = start + i;
-                if (a[offset] != b[offset])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        Normal = 0x00,
+        DlpChild = 0x01,
+        Demo = 0x02,
+        Contents = 0x03,
+        AddOnContents = 0x04,
+        Patch = 0x06,
+        CannotExecution = 0x08,
+        System = 0x10,
+        RequireBatchUpdate = 0x20,
+        NotRequireUserApproval = 0x40,
+        NotRequireRightForMount = 0x80,
+        CanSkipConvertJumpId = 0x100,
+        TWL = 0x8000
     }
 }

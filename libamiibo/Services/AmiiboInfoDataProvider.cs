@@ -53,9 +53,9 @@ namespace LibAmiibo.Services
             }
 
             var splitterIndex = name.LastIndexOf('-') + 1;
-            if (splitterIndex > 0)
+            if (splitterIndex > 0 && splitterIndex < name.Length)
             {
-                name = name.Substring(name.LastIndexOf('-') + 1);
+                name = name.Substring(splitterIndex);
             }
 
             return name.Trim();

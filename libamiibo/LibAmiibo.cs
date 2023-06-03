@@ -33,7 +33,7 @@ namespace LibAmiibo
         public async Task UpdateLocalAmiiboData()
         {
             await this.apiService.DownloadListsData();
-            this.amiiboInfoDataProvider.Refresh();
+            await this.amiiboInfoDataProvider.Refresh();
         }
 
         public async Task UpdateMissingLocalAmiiboImages() => await this.apiService.DownloadMissingImage((await this.GetAmiiboApiData()).Amiibos.Keys.ToArray());

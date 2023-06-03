@@ -31,7 +31,7 @@ namespace LibAmiibo.Services
 
         public string GetCharacterName(int id) => this.GetCharacterName(this.IdToHexId(id, 4));
 
-        public string GetSubCharacterName(long id) => this.GetSubCharacterName(this.IdToHexId(id, 16));
+        public string GetSubCharacterName(long id) => this.GetSubCharacterName(this.IdToHexId(id, 6));
 
         public string GetTypeName(int id) => this.GetTypeName(this.IdToHexId(id, 2));
 
@@ -45,10 +45,20 @@ namespace LibAmiibo.Services
 
         public string GetSubCharacterName(string hexId)
         {
-            var amiiboKV = this.apiData?.Amiibos.FirstOrDefault(a => a.Key.StartsWith(hexId));
-            var name = amiiboKV?.Value.Name;
+            var amiiboKV = this.apiData?.Amiibos.FirstOrDefault(a => a.Key.StartsWith(hexId, StringComparison.OrdinalIgnoreCase));
+            var name = amiiboKV?.Value?.Name;
+            if (string.IsNullOrEmpty(name))
+            {
+                return name;
+            }
 
-            return string.IsNullOrEmpty(name) ? null : name.Substring(name.LastIndexOf('-')).Trim();
+            var splitterIndex = name.LastIndexOf('-') + 1;
+            if (splitterIndex > 0)
+            {
+                name = name.Substring(name.LastIndexOf('-') + 1);
+            }
+
+            return name.Trim();
         }
 
         public string GetTypeName(string hexId) => this.GetEntry<string>(this.apiData?.Types, hexId);

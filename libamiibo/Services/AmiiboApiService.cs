@@ -94,6 +94,7 @@ namespace LibAmiibo.Services
                 throw new ArgumentException($"{hexId} is not 16 chars (18 chars with beginning 0x) long.");
             }
 
+            hexId = hexId.ToLower();
             return $"icon_{hexId.Substring(0, 8)}-{hexId.Substring(8)}.png";
         }
 

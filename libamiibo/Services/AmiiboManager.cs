@@ -34,6 +34,8 @@ namespace LibAmiibo.Services
         private AmiiboKeys keys;
         private readonly IAmiiboInfoDataProvider infoDataProvider;
 
+        public bool IsAmiiboKeyProvided => this.keys != null;
+
         public AmiiboManager(IAmiiboInfoDataProvider infoDataProvider)
         {
             this.infoDataProvider = infoDataProvider;

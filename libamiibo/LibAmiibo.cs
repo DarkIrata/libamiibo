@@ -36,6 +36,8 @@ namespace LibAmiibo
             await this.amiiboInfoDataProvider.Refresh();
         }
 
+        public bool IsAmiiboKeyProvided => this.amiiboManager?.IsAmiiboKeyProvided ?? false;
+
         public async Task UpdateMissingLocalAmiiboImages() => await this.apiService.DownloadMissingImage((await this.GetAmiiboApiData()).Amiibos.Keys.ToArray());
 
         public async Task<string> GetLocalAmiiboImage(string hexId, bool downloadIfMissing = true) => await this.apiService.GetAmiiboImage(hexId, downloadIfMissing);

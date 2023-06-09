@@ -13,6 +13,8 @@ namespace LibAmiibo
 
         public bool IsLocalAmiiboDataAvailable => this.apiService?.IsDataAvailable ?? false;
 
+        public AmiiboApiService GetApiService => this.apiService;
+
         public LibAmiibo(string amiiboKeyFile = null)
         {
             this.apiService = new AmiiboApiService();
@@ -35,6 +37,8 @@ namespace LibAmiibo
             await this.apiService.DownloadListsData();
             await this.amiiboInfoDataProvider.Refresh();
         }
+
+        public async Task<bool> RefreshInfoDataProvider() => await this.amiiboInfoDataProvider.Refresh();
 
         public bool IsAmiiboKeyProvided => this.amiiboManager?.IsAmiiboKeyProvided ?? false;
 

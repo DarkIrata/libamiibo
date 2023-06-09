@@ -47,23 +47,23 @@ namespace LibAmiibo.Services
                 MaxDegreeOfParallelism = 5
             };
 
-            await Parallel.ForEachAsync(hexIds, parallelOptions, async (id, token) =>
+            await Parallel.ForEachAsync(hexIds, parallelOptions, async (hexId, token) =>
             {
-                var filename = this.AmiiboIdToImageFilename(id);
-                var filePath = this.ImagesDir + filename;
+                var filePath = this.GetAmiiboImagePath(hexId);
+                var filePathTmp = filePath + ".tmp";
                 var remove = false;
                 try
                 {
                     using var wc = new HttpClient();
-                    using (var fw = File.OpenWrite(filePath))
+                    using (var fw = File.OpenWrite(filePathTmp))
                     {
-                        var response = await wc.GetAsync(AmiiboApiImageBaseUrl + filename, token);
+                        var response = await wc.GetAsync(AmiiboApiImageBaseUrl + Path.GetFileName(filePath), token);
                         await response.Content.CopyToAsync(fw);
                     }
 
-                    if (File.Exists(filePath))
+                    if (File.Exists(filePathTmp))
                     {
-                        var info = new FileInfo(filePath);
+                        var info = new FileInfo(filePathTmp);
                         if (info.Length == 0)
                         {
                             remove = true;
@@ -75,11 +75,19 @@ namespace LibAmiibo.Services
                     remove = true;
                 }
 
-                if (File.Exists(filePath) && remove)
+                if (File.Exists(filePathTmp) && remove)
                 {
-                    File.Delete(filePath);
+                    File.Delete(filePathTmp);
                 }
+
+                File.Move(filePathTmp, filePath);
             });
+        }
+
+        public string GetAmiiboImagePath(string hexId)
+        {
+            var filename = this.AmiiboIdToImageFilename(hexId);
+            return this.ImagesDir + filename;
         }
 
         public string AmiiboIdToImageFilename(string hexId)

@@ -11,8 +11,6 @@ namespace LibAmiibo.Services
         public AmiiboInfoDataProvider(AmiiboApiService apiService)
         {
             this.apiService = apiService;
-
-            this.Refresh().GetAwaiter().GetResult();
         }
 
         public async Task<bool> Refresh()

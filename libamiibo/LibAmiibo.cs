@@ -42,11 +42,13 @@ namespace LibAmiibo
 
         public bool IsAmiiboKeyProvided => this.amiiboManager?.IsAmiiboKeyProvided ?? false;
 
-        public async Task UpdateMissingLocalAmiiboImages() => await this.apiService.DownloadMissingImage((await this.GetAmiiboApiData()).Amiibos.Keys.ToArray());
+        public async Task UpdateMissingLocalAmiiboImages() => await this.apiService.DownloadMissingImage((await this.GetAmiiboApiDataAsync()).Amiibos.Keys.ToArray());
 
         public async Task<string> GetLocalAmiiboImage(string hexId, bool downloadIfMissing = true) => await this.apiService.GetAmiiboImage(hexId, downloadIfMissing);
 
-        public async Task<AmiiboApiData> GetAmiiboApiData() => await this.apiService.GetAmiiboApiData();
+        public async Task<AmiiboApiData> GetAmiiboApiDataAsync() => await this.apiService.GetAmiiboApiDataAsync();
+
+        public AmiiboApiData GetAmiiboApiData() => this.apiService.GetAmiiboApiData();
 
         public AmiiboTag DecryptTag(byte[] data) => this.amiiboManager.DecryptTag(data);
 

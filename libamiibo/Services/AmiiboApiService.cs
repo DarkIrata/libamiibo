@@ -109,7 +109,7 @@ namespace LibAmiibo.Services
             return $"icon_{hexId.Substring(0, 8)}-{hexId.Substring(8)}.png";
         }
 
-        public async Task<AmiiboApiData> GetAmiiboApiData()
+        public async Task<AmiiboApiData> GetAmiiboApiDataAsync()
         {
             if (!File.Exists(this.AmiibosApiListsDataFile))
             {
@@ -118,6 +118,17 @@ namespace LibAmiibo.Services
 
             using var fr = File.OpenRead(this.AmiibosApiListsDataFile);
             return await JsonSerializer.DeserializeAsync<AmiiboApiData>(fr);
+        }
+
+        public AmiiboApiData GetAmiiboApiData()
+        {
+            if (!File.Exists(this.AmiibosApiListsDataFile))
+            {
+                return null;
+            }
+
+            using var fr = File.OpenRead(this.AmiibosApiListsDataFile);
+            return JsonSerializer.Deserialize<AmiiboApiData>(fr);
         }
 
         internal async Task<string> GetAmiiboImage(string hexId, bool downloadIfMissing)

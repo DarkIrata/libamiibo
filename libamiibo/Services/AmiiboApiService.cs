@@ -80,7 +80,10 @@ namespace LibAmiibo.Services
                     File.Delete(filePathTmp);
                 }
 
-                File.Move(filePathTmp, filePath);
+                if (File.Exists(filePathTmp))
+                {
+                    File.Move(filePathTmp, filePath);
+                }
             });
         }
 

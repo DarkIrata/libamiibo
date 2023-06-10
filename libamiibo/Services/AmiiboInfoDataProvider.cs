@@ -17,7 +17,7 @@ namespace LibAmiibo.Services
         {
             if (this.apiService.IsDataAvailable)
             {
-                this.apiData = await this.apiService.GetAmiiboApiData();
+                this.apiData = await this.apiService.GetAmiiboApiDataAsync();
             }
 
             return this.apiData != null;
@@ -73,9 +73,10 @@ namespace LibAmiibo.Services
                 hexId = "0x" + hexId;
             }
 
-            if (dict != null && dict.TryGetValue(hexId, out T value))
+            var entry = dict?.FirstOrDefault(kv => kv.Key.StartsWith(hexId, StringComparison.OrdinalIgnoreCase));
+            if (entry.HasValue)
             {
-                return value;
+                return entry.Value.Value;
             }
 
             return null;

@@ -5,8 +5,8 @@ namespace LibAmiibo.Services
 {
     public class AmiiboApiService
     {
-        private const string AmiiboApiListsDataUrl = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/database/amiibo.json";
-        private const string AmiiboApiImageBaseUrl = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/";
+        private const string AmiiboApiListsDataUrl = "https://raw.githubusercontent.com/8bitDream/AmiiboAPI/master/database/amiibo.json";
+        private const string AmiiboApiImageBaseUrl = "https://raw.githubusercontent.com/8bitDream/AmiiboAPI/master/images/";
         private const string DataDir = "./AmiiboApi/";
         private readonly string ImagesDir = DataDir + "Images/";
         private readonly string AmiibosApiListsDataFile = DataDir + "amiibo.json";
